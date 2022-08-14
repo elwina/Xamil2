@@ -6,7 +6,10 @@ import { customAlphabet } from 'nanoid';
 import { DateTime } from 'luxon';
 
 const TAG = '初始化';
-const LOGIN_EXPIRE_SECONDS = 60 * 60 * 24;
+const LOGIN_EXPIRE_SECONDS = 60 * 60 * 24 * 7; // 7 days
+const alphabet =
+  '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+const nanoid = customAlphabet(alphabet, 21);
 
 @Injectable()
 export class RedisService implements OnModuleInit {
@@ -49,25 +52,41 @@ export class RedisService implements OnModuleInit {
   }
 
   async setToken(userid: string, status: STATUS): Promise<string> {
-    const token: string = customAlphabet(
-      '1234567890abcdefghijklmnopqrstuvwxyz',
-      10,
-    )(10);
-    // const ifExist = await this.client.exists(token);
-    // if (ifExist === 1) {
-    //   return this.setToken(userid, status);
-    // } else {
-    this.client.hSet(token, 'userid', userid);
-    this.client.hSet(token, 'status', status);
-    this.client.hSet(token, 'time', DateTime.local().toString());
-    this.client.expire(token, LOGIN_EXPIRE_SECONDS);
-    return token;
-    // }
+    const token: string = nanoid();
+    const ifExist = await this.client.exists(token);
+    if (ifExist === 1) {
+      return await this.setToken(userid, status);
+    } else {
+      await this.client.hSet(token, 'userid', userid);
+      await this.client.hSet(token, 'status', status);
+      await this.client.hSet(token, 'time', DateTime.local().toString());
+      await this.client.expire(token, LOGIN_EXPIRE_SECONDS);
+      return token;
+    }
+  }
+
+  async checkToken(token: string): Promise<boolean> {
+    const ifExist = await this.client.exists(token);
+    if (ifExist === 1) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  async getStatus(token: string): Promise<STATUS> {
+    const status = await this.client.hGet(token, 'status');
+    return Number(status);
+  }
+
+  async deleteToken(token: string) {
+    await this.client.del(token);
+    return true;
   }
 }
 
-interface RedisUserData {
-  userid: string;
-  status: STATUS;
-  time: string;
-}
+// interface RedisUserData {
+//   userid: string;
+//   status: STATUS;
+//   time: string;
+// }

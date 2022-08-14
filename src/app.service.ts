@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { strictEqual, ok } from 'assert';
 import { RedisService } from './redis/redis.service';
 import { DataSource } from 'typeorm';
+import { DateTime } from 'luxon';
 
 const TAG1 = '自检';
 
@@ -16,6 +17,7 @@ export class AppService implements OnApplicationBootstrap {
 
   async onApplicationBootstrap() {
     Logger.log(`开始自检`, TAG1);
+    Logger.log(`现在时间:${DateTime.now().toString()}`, TAG1);
     this.checkConfig();
     await this.checkRedis();
     this.checkDB();

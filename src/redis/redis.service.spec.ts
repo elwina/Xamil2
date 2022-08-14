@@ -22,36 +22,16 @@ describe('RedisService', () => {
 
   it('ping', async () => {
     await service.connect();
-    expect(await service.check()).toBe(true);
+    expect(service.check()).resolves.toBe(true);
     await service.quit();
   });
 
-  it('set value', async () => {
-    await service.connect();
-    expect(await checkRedis()).toBe(true);
-    await service.quit();
-  });
-
-  async function checkRedis(): Promise<boolean> {
-    try {
-      const redis = service.client;
-      const key = 'test';
-      const value = 'check';
-      await redis.set(key, value);
-      const qu = await redis.get(key);
-      if (qu === value) {
-        await redis.del(key);
-        return true;
-      }
-    } catch {
-      return false;
-    }
-  }
-
-  it('set token', async () => {
+  it('test token', async () => {
     await service.connect();
     const token = await service.setToken('testuser', STATUS.NORMAL);
-    expect(await service.client.exists(token)).toBe(1);
+    expect(service.checkToken(token)).resolves.toBe(true);
+    expect(service.getStatus(token)).resolves.toBe(STATUS.NORMAL);
+    expect(service.deleteToken(token)).resolves.toBe(true);
     await service.quit();
   });
 });
