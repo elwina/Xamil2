@@ -1,5 +1,6 @@
 import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
+import { STATUS } from '../const';
 import configuration from '../config/configuration';
 import { RedisService } from './redis.service';
 
@@ -46,4 +47,11 @@ describe('RedisService', () => {
       return false;
     }
   }
+
+  it('set token', async () => {
+    await service.connect();
+    const token = await service.setToken('testuser', STATUS.NORMAL);
+    expect(await service.client.exists(token)).toBe(1);
+    await service.quit();
+  });
 });

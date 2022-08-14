@@ -6,6 +6,8 @@ import { RedisModule } from './redis/redis.module';
 import configuration from './config/configuration';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { SmsModule } from './sms/sms.module';
+import { WxhttpModule } from './wxhttp/wxhttp.module';
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
@@ -29,6 +31,8 @@ import { SmsModule } from './sms/sms.module';
       inject: [ConfigService],
     }),
     SmsModule,
+    WxhttpModule,
+    UsersModule,
   ],
   controllers: [AppController],
   providers: [AppService],

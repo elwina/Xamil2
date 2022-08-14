@@ -21,4 +21,8 @@ describe('AppController (e2e)', () => {
       .expect(200)
       .expect({ status: 1 });
   });
+
+  it('Create User Check', () => {
+    return request(app.getHttpServer());
+  });
 });
