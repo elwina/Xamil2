@@ -24,3 +24,12 @@ export class PostPhoneDto {
 export class PostPhoneSuccessDto {
   status: 1 | 2;
 }
+
+export class PostVercodeDto {
+  phone: string;
+  vercode: number;
+}
+
+export class PostVercodeSuccessDto {
+  status: 1 | 2;
+}

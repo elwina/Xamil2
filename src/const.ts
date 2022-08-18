@@ -18,3 +18,10 @@ export enum MSGTYPE {
   TXT,
   IMAGE,
 }
+
+export enum ROLE {
+  VISITOR,
+  NORMAL,
+  CERT,
+  ADMIN,
+}

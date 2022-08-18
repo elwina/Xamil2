@@ -33,7 +33,7 @@ export class RedisService implements OnModuleInit {
       await this.client.select(0);
       Logger.log('redis connect成功', TAG);
     } catch {
-      Logger.log('redis connect失败', TAG);
+      Logger.error('redis connect失败', TAG);
     }
   }
 
@@ -65,10 +65,11 @@ export class RedisService implements OnModuleInit {
     }
   }
 
-  async checkToken(token: string): Promise<boolean> {
+  async checkToken(token: string): Promise<string | false> {
     const ifExist = await this.client.exists(token);
     if (ifExist === 1) {
-      return true;
+      const userid = await this.client.hGet(token, 'userid');
+      return userid;
     } else {
       return false;
     }
@@ -82,6 +83,21 @@ export class RedisService implements OnModuleInit {
   async deleteToken(token: string) {
     await this.client.del(token);
     return true;
+  }
+
+  async setVercode(phone: string, code: number) {
+    await this.client.set(phone, code);
+    return true;
+  }
+
+  async checkVercode(phone: string, code: number) {
+    const targetCode = parseInt(await this.client.get(phone));
+    await this.client.del(phone);
+    if (targetCode && targetCode === code) {
+      return true;
+    } else {
+      return false;
+    }
   }
 }
 

@@ -16,7 +16,7 @@ export class User {
 export class Userwx {
   @PrimaryColumn() userid: string;
   @Column() openid: string;
-  @Column() unionid: string;
+  @Column({ default: 'unset' }) unionid: string;
 }
 
 @Entity()
